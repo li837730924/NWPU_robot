@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/liao/car/devel/include",
+                "/opt/ros/kinetic/include",
+                "/home/liao/car/src/hector_navigation/hector_costmap/include",
+                "/home/liao/car/src/hector_navigation/hector_elevation_mapping/include",
+                "/home/liao/car/src/hector_navigation/hector_elevation_visualization/include",
+                "/home/liao/car/src/hector_navigation/hector_exploration_planner/include",
+                "/home/liao/car/src/hector_slam/hector_geotiff/include",
+                "/home/liao/car/src/hector_slam/hector_map_tools/include",
+                "/home/liao/car/src/hector_slam/hector_mapping/include",
+                "/home/liao/car/src/hector_slam/hector_marker_drawing/include",
+                "/home/liao/car/src/hector_navigation/hector_path_follower/include",
+                "/home/liao/car/src/urg_node/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
