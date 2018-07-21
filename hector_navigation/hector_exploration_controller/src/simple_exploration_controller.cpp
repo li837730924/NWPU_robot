@@ -38,14 +38,15 @@ public:
   {
     ros::NodeHandle nh;
 
-    exploration_plan_service_client_ = nh.serviceClient<hector_nav_msgs::GetRobotTrajectory>("get_exploration_path");
+    exploration_plan_service_client_ = nh.serviceClient<hector_nav_msgs::GetRobotTrajectory>("get_exploration_path");   //获取路径
 
     path_follower_.initialize(&tfl_);
 
     exploration_plan_generation_timer_ = nh.createTimer(ros::Duration(15.0), &SimpleExplorationController::timerPlanExploration, this, false );
     cmd_vel_generator_timer_ = nh.createTimer(ros::Duration(0.1), &SimpleExplorationController::timerCmdVelGeneration, this, false );
 
-    vel_pub_ = nh.advertise<geometry_msgs::Twist>("cmd_vel", 10);
+    vel_pub_ = nh.advertise<geometry_msgs::Twist>("cmd_vel", 10);    //发布cmd_vel主题 发送速度
+    // geometry_msgs::Twist 消息类型表示自由空间中的速度分为线性和角度部分
 
   }
 
@@ -55,6 +56,7 @@ public:
 
     if (exploration_plan_service_client_.call(srv_exploration_plan)){
       ROS_INFO("Generated exploration path with %u poses", (unsigned int)srv_exploration_plan.response.trajectory.poses.size());
+      // 用 %u 姿态生成探索路径
       path_follower_.setPlan(srv_exploration_plan.response.trajectory.poses);
     }else{
       ROS_WARN("Service call for exploration service failed");

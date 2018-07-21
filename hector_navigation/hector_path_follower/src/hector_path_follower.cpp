@@ -48,7 +48,7 @@ namespace pose_follower {
     node_private.param("tolerance_rot", tolerance_rot_, 0.2);
     node_private.param("tolerance_timeout", tolerance_timeout_, 0.5);
 
-    node_private.param("holonomic", holonomic_, false);
+    node_private.param("holonomic", holonomic_, false); //完整的
 
     node_private.param("samples", samples_, 10);
 
@@ -85,7 +85,7 @@ namespace pose_follower {
   */
 
   double HectorPathFollower::headingDiff(double x, double y, double pt_x, double pt_y, double heading)
-  {
+  { // 航向差
     double v1_x = x - pt_x;
     double v1_y = y - pt_y;
     double v2_x = cos(heading);
@@ -94,7 +94,7 @@ namespace pose_follower {
     double perp_dot = v1_x * v2_y - v1_y * v2_x;
     double dot = v1_x * v2_x + v1_y * v2_y;
 
-    //get the signed angle
+    //get the signed angle 获得带符号的角度
     double vector_angle = atan2(perp_dot, dot);
 
     return -1.0 * vector_angle;
@@ -116,11 +116,12 @@ namespace pose_follower {
   */
 
   bool HectorPathFollower::computeVelocityCommands(geometry_msgs::Twist& cmd_vel){
-
-    if (global_plan_.size() == 0)
+    // 计算速度指令
+    if (global_plan_.size() == 0)   //没有计划
       return false;
 
     //get the current pose of the robot in the fixed frame
+    // 获取机器人在固定框架中的当前姿态
     tf::Stamped<tf::Pose> robot_pose;
     if(!this->getRobotPose(robot_pose)){
       ROS_ERROR("Can't get robot pose");
@@ -132,25 +133,29 @@ namespace pose_follower {
 
 
     //we want to compute a velocity command based on our current waypoint
-    tf::Stamped<tf::Pose> target_pose;
+    // 我们想根据我们当前的航路点计算速度指令
+    tf::Stamped<tf::Pose> target_pose;//目标位姿
     tf::poseStampedMsgToTF(global_plan_[current_waypoint_], target_pose);
 
     ROS_DEBUG("HectorPathFollower: current robot pose %f %f ==> %f", robot_pose.getOrigin().x(), robot_pose.getOrigin().y(), tf::getYaw(robot_pose.getRotation()));
     ROS_DEBUG("HectorPathFollower: target robot pose %f %f ==> %f", target_pose.getOrigin().x(), target_pose.getOrigin().y(), tf::getYaw(target_pose.getRotation()));
 
     //get the difference between the two poses
+    //得到两个位姿的不同
     geometry_msgs::Twist diff = diff2D(target_pose, robot_pose);
     ROS_DEBUG("HectorPathFollower: diff %f %f ==> %f", diff.linear.x, diff.linear.y, diff.angular.z);
 
     geometry_msgs::Twist limit_vel = limitTwist(diff);
 
     geometry_msgs::Twist test_vel = limit_vel;
-    bool legal_traj = true; //collision_planner_.checkTrajectory(test_vel.linear.x, test_vel.linear.y, test_vel.angular.z, true);
+    bool legal_traj = true;// 合理的路径 
+    //collision_planner_.checkTrajectory(test_vel.linear.x, test_vel.linear.y, test_vel.angular.z, true);
 
-    double scaling_factor = 1.0;
-    double ds = scaling_factor / samples_;
+    double scaling_factor = 1.0;// 比例因子
+    double ds = scaling_factor / samples_;// 比例因子/样例
 
     //let's make sure that the velocity command is legal... and if not, scale down
+    //让我们确保速度指令是合法的…如果没有，缩减规模
     if(!legal_traj){
       for(int i = 0; i < samples_; ++i){
         test_vel.linear.x = limit_vel.linear.x * scaling_factor;
@@ -173,6 +178,7 @@ namespace pose_follower {
     }
 
     //if it is legal... we'll pass it on
+    //如果是合法的…我们将通过它
     cmd_vel = test_vel;
 
     bool in_goal_position = false;
@@ -195,10 +201,12 @@ namespace pose_follower {
     }
 
     //if we're not in the goal position, we need to update time
+    //如果我们不在目标位置，我们需要更新时间
     if(!in_goal_position)
       goal_reached_time_ = ros::Time::now();
 
     //check if we've reached our goal for long enough to succeed
+    //检查我们是否已经达到我们的目标足够长的成功
     if(goal_reached_time_ + ros::Duration(tolerance_timeout_) < ros::Time::now()){
       geometry_msgs::Twist empty_twist;
       cmd_vel = empty_twist;
@@ -207,11 +215,20 @@ namespace pose_follower {
     return true;
   }
 
+  
+  
+  
+  
+  
+  
+  
+  
   bool HectorPathFollower::setPlan(const std::vector<geometry_msgs::PoseStamped>& global_plan){
     current_waypoint_ = 0;
     goal_reached_time_ = ros::Time::now();
     if(!transformGlobalPlan(*tf_, global_plan, p_global_frame_, global_plan_)){
       ROS_ERROR("Could not transform the global plan to the frame of the controller");
+      // 不能将全局规划转化为控制器的框架
       return false;
     }
     return true;
@@ -228,7 +245,7 @@ namespace pose_follower {
   }
 
   geometry_msgs::Twist HectorPathFollower::diff2D(const tf::Pose& pose1, const tf::Pose& pose2)
-  {
+  { // 获取两个位姿的不同
     geometry_msgs::Twist res;
     tf::Pose diff = pose2.inverse() * pose1;
     res.linear.x = diff.getOrigin().x();
@@ -239,23 +256,29 @@ namespace pose_follower {
       return res;
 
     //in the case that we're not rotating to our goal position and we have a non-holonomic robot
+    //在我们没有旋转到目标位置的情况下，我们有一个非完整机器人
     //we'll need to command a rotational velocity that will help us reach our desired heading
+    //我们需要命令一个旋转速度来帮助我们达到理想的航向
     
     //we want to compute a goal based on the heading difference between our pose and the target
+    //我们想要根据姿势和目标之间的航向差异来计算一个目标。
     double yaw_diff = headingDiff(pose1.getOrigin().x(), pose1.getOrigin().y(), 
         pose2.getOrigin().x(), pose2.getOrigin().y(), tf::getYaw(pose2.getRotation()));
 
     //we'll also check if we can move more effectively backwards
+    //我们也会检查我们是否可以更有效地向后移动
     double neg_yaw_diff = headingDiff(pose1.getOrigin().x(), pose1.getOrigin().y(), 
         pose2.getOrigin().x(), pose2.getOrigin().y(), M_PI + tf::getYaw(pose2.getRotation()));
 
     //check if its faster to just back up
+    //检查它是否更快地后退
     if(fabs(neg_yaw_diff) < fabs(yaw_diff)){
       ROS_DEBUG("Negative is better: %.2f", neg_yaw_diff);
       yaw_diff = neg_yaw_diff;
     }
 
     //compute the desired quaterion
+    //计算期望的四元数
     tf::Quaternion rot_diff = tf::createQuaternionFromYaw(yaw_diff);
     tf::Quaternion rot = pose2.getRotation() * rot_diff;
     tf::Pose new_pose = pose1;
@@ -270,7 +293,7 @@ namespace pose_follower {
 
 
   geometry_msgs::Twist HectorPathFollower::limitTwist(const geometry_msgs::Twist& twist)
-  {
+  { //限制速度
     geometry_msgs::Twist res = twist;
     res.linear.x *= K_trans_;
     if(!holonomic_)
@@ -280,6 +303,7 @@ namespace pose_follower {
     res.angular.z *= K_rot_;
 
     //make sure to bound things by our velocity limits
+    //确保我们的速度限制
     double lin_overshoot = sqrt(res.linear.x * res.linear.x + res.linear.y * res.linear.y) / max_vel_lin_;
     double lin_undershoot = min_vel_lin_ / sqrt(res.linear.x * res.linear.x + res.linear.y * res.linear.y);
     if (lin_overshoot > 1.0) 
@@ -289,6 +313,7 @@ namespace pose_follower {
     }
 
     //we only want to enforce a minimum velocity if we're not rotating in place
+    //我们只想执行一个最小速度，如果我们不在原地旋转
     if(lin_undershoot > 1.0)
     {
       res.linear.x *= lin_undershoot;
@@ -299,6 +324,7 @@ namespace pose_follower {
     if (fabs(res.angular.z) < min_vel_th_) res.angular.z = min_vel_th_ * sign(res.angular.z);
 
     //we want to check for whether or not we're desired to rotate in place
+    //我们想检查一下我们是否希望在原地旋转
     if(sqrt(twist.linear.x * twist.linear.x + twist.linear.y * twist.linear.y) < in_place_trans_vel_){
       if (fabs(res.angular.z) < min_in_place_vel_th_) res.angular.z = min_in_place_vel_th_ * sign(res.angular.z);
       res.linear.x = 0.0;
@@ -331,6 +357,7 @@ namespace pose_follower {
       tf::Stamped<tf::Pose> tf_pose;
       geometry_msgs::PoseStamped newer_pose;
       //now we'll transform until points are outside of our distance threshold
+      //现在我们将转换，直到点超出我们的距离阈值
       for(unsigned int i = 0; i < global_plan.size(); ++i){
         const geometry_msgs::PoseStamped& pose = global_plan[i];
         poseStampedMsgToTF(pose, tf_pose);
@@ -369,9 +396,9 @@ namespace pose_follower {
     robot_pose.setIdentity();
     robot_pose.frame_id_ = p_robot_base_frame_;
     robot_pose.stamp_ = ros::Time(0);
-    ros::Time current_time = ros::Time::now(); // save time for checking tf delay later
+    ros::Time current_time = ros::Time::now(); // save time for checking tf delay later 节省时间检查TF延迟
 
-    //get the global pose of the robot
+    //get the global pose of the robot 获取机器人的全局姿态
     try{
       tf_->transformPose(p_global_frame_, robot_pose, global_pose);
     }
@@ -387,7 +414,7 @@ namespace pose_follower {
       ROS_ERROR_THROTTLE(1.0, "Extrapolation Error looking up robot pose: %s\n", ex.what());
       return false;
     }
-    // check global_pose timeout
+    // check global_pose timeout 检查全球姿态是否超时
 
     /*
     if (current_time.toSec() - global_pose.stamp_.toSec() > transform_tolerance_) {
