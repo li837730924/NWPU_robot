@@ -45,7 +45,7 @@ public:
     exploration_plan_generation_timer_ = nh.createTimer(ros::Duration(15.0), &SimpleExplorationController::timerPlanExploration, this, false );
     cmd_vel_generator_timer_ = nh.createTimer(ros::Duration(0.1), &SimpleExplorationController::timerCmdVelGeneration, this, false );
 
-    vel_pub_ = nh.advertise<geometry_msgs::Twist>("cmd_vel", 10);    //发布cmd_vel主题 发送速度
+    vel_pub_ = nh.advertise<geometry_msgs::Twist>("/explorer_drive_controller/cmd_vel", 10); //cmd_vel   //发布cmd_vel主题 发送速度
     // geometry_msgs::Twist 消息类型表示自由空间中的速度分为线性和角度部分
 
   }
