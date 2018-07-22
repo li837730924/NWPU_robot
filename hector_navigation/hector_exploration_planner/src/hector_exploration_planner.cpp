@@ -1128,12 +1128,14 @@ bool HectorExplorationPlanner::findFrontiersCloseToPath(std::vector<geometry_msg
   frontiers.clear();
 
   // get the trajectory as seeds for the exploration transform
+  // 轨迹作为探索转化的前提
   hector_nav_msgs::GetRobotTrajectory srv_path;
   if (path_service_client_.call(srv_path)){
 
     std::vector<geometry_msgs::PoseStamped>& traj_vector (srv_path.response.trajectory.poses);
 
     // We push poses of the travelled trajectory to the goals vector for building the exploration transform
+    // 我们将行进轨道的姿态推到目标向量，以建立探测变换。
     std::vector<geometry_msgs::PoseStamped> goals;
 
     size_t size = traj_vector.size();
