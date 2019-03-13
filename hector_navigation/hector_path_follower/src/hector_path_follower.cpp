@@ -151,7 +151,7 @@ namespace pose_follower {
     bool legal_traj = true;// 合理的路径 
     //collision_planner_.checkTrajectory(test_vel.linear.x, test_vel.linear.y, test_vel.angular.z, true);
 
-    double scaling_factor = 1.0;// 比例因子
+    double scaling_factor = 10.0;// 比例因子
     double ds = scaling_factor / samples_;// 比例因子/样例
 
     //let's make sure that the velocity command is legal... and if not, scale down

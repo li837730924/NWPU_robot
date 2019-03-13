@@ -15,7 +15,7 @@
 -->
 
 <launch>
-  <param name="/use_sim_time" value="flase" /> <!--是否使用仿真数据-->
+  <param name="/use_sim_time" value="false" /> <!--是否使用仿真数据-->
 
   <node name="cartographer_node" pkg="cartographer_ros"
       type="cartographer_node" args="
@@ -27,10 +27,9 @@
 
   <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
       type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
-
-  <node pkg="tf" type="static_transform_publisher"  name="base_to_laser_broadcaster" args="0 0 0 0 0 0 /base_link /laser 100"/>
  
   <node name="rviz" pkg="rviz" type="rviz" required="true"
       args="-d $(find cartographer_ros)/configuration_files/demo_2d.rviz" />
-
+  
+  <node name="base_to_laser_broadcaster" pkg="tf" type="static_transform_publisher" args="-0.04 -0.05 0.28 0 0 0 /base_link /laser 100"/>
 </launch>

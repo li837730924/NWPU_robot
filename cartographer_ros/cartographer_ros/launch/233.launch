@@ -1,0 +1,31 @@
+<launch>
+<!--
+    <arg name="trajectory_source_frame_name" default="/base_link"/>
+    <arg name="trajectory_update_rate" default="4"/>
+    <arg name="trajectory_publish_rate" default="0.25"/>
+-->
+  <param name="/use_sim_time" value="flase" />
+  <!--这个参数当回放bag数据集是设置为true，此时说明系统使用的是仿真时间，如果设>置为false，则系统使用walltime -->
+
+  <node name="cartographer_node" pkg="cartographer_ros"
+      type="cartographer_node" args="
+          -configuration_directory $(find cartographer_ros)/configuration_files
+          -configuration_basename revo_lds.lua" 
+       output="screen">
+    <remap from="scan" to="scan" />
+  </node>
+
+  <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros"
+      type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+  <!--node name="hector_map_server" pkg="hector_map_server" type="hector_map_server" output="screen" /-->
+  <!--node name="rviz" pkg="rviz" type="rviz" required="true"
+      args="-d $(find cartographer_ros)/configuration_files/demo_Best.rviz" /-->
+
+
+  <!--node name="base_to_laser_broadcaster" pkg="tf" type="static_transform_publisher" args="-0.355 0 0.37 0 0 0 /base_link /laser 100"/-->
+  <!--node name="base_to_laser_broadcaster" pkg="tf" type="static_transform_publisher" args="0.16 0 0.17 0 0 0 /base_link /laser 100"/-->
+  <node name="base_to_laser_broadcaster" pkg="tf" type="static_transform_publisher" args="-0.025 0.015 0.17 0 0 0 /base_link /laser 100"/>
+</launch>
+
+

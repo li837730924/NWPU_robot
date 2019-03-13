@@ -54,7 +54,8 @@
         "thread": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "*.ipp": "cpp"
     },
     "python.autoComplete.extraPaths": [
         "/home/liao/car/devel/lib/python2.7/dist-packages",

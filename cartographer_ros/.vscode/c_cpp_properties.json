@@ -1,0 +1,41 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/liao/explorer_small/devel/include",
+                "/home/liao/car/devel/include",
+                "/opt/ros/kinetic/include",
+                "/home/liao/car/src/explorer/ros_control/combined_robot_hw/include",
+                "/home/liao/car/src/explorer/ros_control/combined_robot_hw_tests/include",
+                "/home/liao/car/src/explorer/ros_control/controller_manager_tests/include",
+                "/home/liao/car/src/explorer/explorer_app_new/include",
+                "/home/liao/car/src/explorer/explorer_audio/include",
+                "/home/liao/car/src/explorer/explorer_moveit/include",
+                "/home/liao/car/src/explorer/ros_control/hardware_interface/include",
+                "/home/liao/car/src/hector_navigation/hector_costmap/include",
+                "/home/liao/car/src/hector_navigation/hector_elevation_mapping/include",
+                "/home/liao/car/src/hector_navigation/hector_elevation_visualization/include",
+                "/home/liao/car/src/hector_navigation/hector_exploration_planner/include",
+                "/home/liao/car/src/hector_slam/hector_geotiff/include",
+                "/home/liao/car/src/hector_slam/hector_map_tools/include",
+                "/home/liao/car/src/hector_slam/hector_mapping/include",
+                "/home/liao/car/src/hector_slam/hector_marker_drawing/include",
+                "/home/liao/car/src/hector_navigation/hector_path_follower/include",
+                "/home/liao/car/src/explorer/ros_control/joint_limits_interface/include",
+                "/home/liao/car/src/explorer/ros_control/transmission_interface/include",
+                "/home/liao/car/src/urg_node/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

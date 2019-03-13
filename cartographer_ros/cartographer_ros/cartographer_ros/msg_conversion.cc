@@ -400,17 +400,17 @@ std::unique_ptr<nav_msgs::OccupancyGrid> CreateOccupancyGridMsg(
       const uint32_t packed = pixel_data[y * width + x];
       const unsigned char color = packed >> 16;
       const unsigned char observed = packed >> 8;
-      int value_temp = ::cartographer::common::RoundToInt((1. - color / 255.) * 100.); //(1. - color / 255.) * 100.     summp的数据转换为map
-      if (value_temp > 51)
+      int value_temp = ::cartographer::common::RoundToInt((1. - color / 255.) * 100.); //     summp的数据转换为map
+      if (value_temp > 50)
           value_temp = 100;
-      else if (value_temp < 49)
-          value_temp =  0;
+      // else if (value_temp <40 )
+      //     value_temp =  0;
       else
           value_temp += 0;
       const  int value =
           observed == 0
               ? -1
-              : value_temp ;
+              : value_temp ;                     //代价值更改点
       CHECK_LE(-1, value);                      //校对value范围 >=-1
       CHECK_GE(100, value);                    //校对value范围  <=100
       occupancy_grid->data.push_back(value);

@@ -50,6 +50,8 @@ public:
   ~HectorExplorationPlanner();
   HectorExplorationPlanner(std::string name,costmap_2d::Costmap2DROS *costmap_ros);
   void initialize(std::string name,costmap_2d::Costmap2DROS *costmap_ros);
+  
+  void chatterCallback(const geometry_msgs::TwistConstPtr & msg);
 
   void dynRecParamCallback(hector_exploration_planner::ExplorationPlannerConfig &config, uint32_t level);
 
@@ -88,6 +90,14 @@ public:
   float angleDifferenceWall(const geometry_msgs::PoseStamped &start, const geometry_msgs::PoseStamped &goal);
   bool exploreWalls(const geometry_msgs::PoseStamped &start, std::vector<geometry_msgs::PoseStamped> &goals);
 
+  double ax;
+  double bx;
+  int i;
+  int a;
+  int b;
+  int exp; 
+  
+
 private:
 
   enum LastMode{
@@ -98,6 +108,7 @@ private:
   /**
    * Updates costmap data and resizes internal data structures if costmap size has changed. Should be called once before every planning command
    */
+  
   void setupMapData();
   void deleteMapData();
   bool buildobstacle_trans_array_(bool use_inflated_obstacles);
